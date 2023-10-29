@@ -31,3 +31,7 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# My own additions
+*.vscode
+*.DS_Store
