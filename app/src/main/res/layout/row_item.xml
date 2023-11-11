@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/quartz">
+
+    <TextView
+        android:id="@+id/entryTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_marginLeft="10dp"
+        android:textSize="25dp"
+        android:textColor="@color/white"
+        android:text="Testing "/>
+
+    <TextView
+        android:id="@+id/entryLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_marginLeft="10dp"
+        android:textSize="15dp"
+        android:textColor="@color/white"
+        android:layout_below="@+id/entryTitle"
+        android:text="Dublin, Ireland"/>
+
+    <TextView
+        android:id="@+id/entryTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:textSize="15dp"
+        android:textColor="@color/white"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:text="7:28PM"/>
+
+</RelativeLayout>
