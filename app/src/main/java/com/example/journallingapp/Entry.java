@@ -7,8 +7,41 @@ import java.util.Date;
 public class Entry {
     @PrimaryKey (autoGenerate = true)
     private int id;
-    private String entry_name;
+    private String name;
     private String prompt;
     private String location;
-    private Date time;
+    private Date date;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String entry_name) {
+        this.name = entry_name;
+    }
+
+    public String getPrompt() {
+        return prompt;
+    }
+
+    public void setPrompt(String prompt) {
+        this.prompt = prompt;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date time) {
+        this.date = time;
+    }
+
 }

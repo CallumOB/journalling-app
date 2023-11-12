@@ -19,6 +19,6 @@ public interface EntryDao {
     @Delete
     void delete (Entry targetEntry);
 
-    @Query("SELECT * FROM ENTRY")
+    @Query("SELECT * FROM ENTRY ORDER BY DATE DESC")
     List<Entry> getEntries();
 }
