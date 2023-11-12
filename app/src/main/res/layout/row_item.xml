@@ -35,6 +35,6 @@
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="10dp"
-        android:text="7:28PM"/>
+        android:text="7:28PM, 30/10/23"/>
 
 </RelativeLayout>
