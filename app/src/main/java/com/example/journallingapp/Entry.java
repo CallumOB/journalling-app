@@ -10,7 +10,7 @@ public class Entry {
     private String name;
     private String prompt;
     private String location;
-    private Date date;
+    private String date;
 
     public String getName() {
         return name;
@@ -36,12 +36,12 @@ public class Entry {
         this.location = location;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date time) {
-        this.date = time;
+    public void setDate(String date) {
+        this.date = date;
     }
 
 }
