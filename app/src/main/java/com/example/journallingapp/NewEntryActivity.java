@@ -3,6 +3,7 @@ package com.example.journallingapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.room.Room;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -10,6 +11,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteConstraintException;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -19,6 +22,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -26,15 +30,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 public class NewEntryActivity extends AppCompatActivity {
 
+    private EntryDao entry_dao;
     private TextView prompt;
     private TextView date;
     private TextView location;
+    private EditText name;
     private EditText contents;
     private Button submit;
-    int LOCATION_PERMISSION_CODE = 1;
+    private int LOCATION_PERMISSION_CODE = 1;
+    private String[] prompt_array;
+    private Random random_prompt = new Random();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +53,53 @@ public class NewEntryActivity extends AppCompatActivity {
         prompt = findViewById(R.id.newEntryPrompt);
         date = findViewById(R.id.newEntryDate);
         location = findViewById(R.id.newEntryLocation);
+        name = findViewById(R.id.newEntryTitle);
         contents = findViewById(R.id.newEntryText);
         submit = findViewById(R.id.newEntrySubmit);
+        prompt_array = getResources().getStringArray(R.array.journal_prompts);
+
+        entry_dao = Room.databaseBuilder(this, EntryDatabase.class, "entry-db")
+                .allowMainThreadQueries()
+                .build()
+                .getEntryDao();
+
+        // displays a random journalling prompt from the array in string.xml
+        prompt.setText(prompt_array[random_prompt.nextInt(20)]);
+        date.setText(getSystemTime());
+        location.setText(getSystemLocation());
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String entry_name = name.getText().toString();
+                String entry_contents = contents.getText().toString();
+                String entry_prompt = prompt.getText().toString();
+                String entry_location = location.getText().toString();
+                String entry_date = date.getText().toString();
 
+                if (entry_name.length() == 0 ||
+                    entry_contents.length() == 0 ||
+                    entry_prompt.length() == 0 ||
+                    entry_location == null ||
+                    entry_date.length() == 0) {
+                    Toast.makeText(NewEntryActivity.this, "Please enter all details and ensure location permissions have been granted.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                Entry new_entry = new Entry();
+                new_entry.setName(entry_name);
+                new_entry.setContents(entry_contents);
+                new_entry.setPrompt(entry_prompt);
+                new_entry.setLocation(entry_location);
+                new_entry.setDate(entry_date);
+
+                try {
+                    entry_dao.insert(new_entry);
+                    setResult(RESULT_OK);
+                    finish();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -63,7 +112,7 @@ public class NewEntryActivity extends AppCompatActivity {
         return date_format.format(current_date);
     }
 
-    private String getSystemLocation(Context context, String location_name) {
+    private String getSystemLocation() {
         /* Code referenced from a few places.
         Getting Longitude and Latitude:
         - https://www.tutorialspoint.com/how-to-get-current-location-latitude-and-longitude-in-android

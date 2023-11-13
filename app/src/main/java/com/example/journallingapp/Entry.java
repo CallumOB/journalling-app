@@ -8,6 +8,7 @@ public class Entry {
     @PrimaryKey (autoGenerate = true)
     private int id;
     private String name;
+    private String contents;
     private String prompt;
     private String location;
     private String date;
@@ -19,6 +20,10 @@ public class Entry {
     public void setName(String entry_name) {
         this.name = entry_name;
     }
+
+    public String getContents() {return contents;}
+
+    public void setContents(String contents) {this.contents = contents;}
 
     public String getPrompt() {
         return prompt;
