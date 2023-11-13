@@ -1,26 +1,28 @@
 <resources>
     <string name="app_name">Journalling App</string>
+    <string name="new_entry">New Entry</string>
+    <string name="entry_editText">Write your entry...</string>
 
-        <string-array name="journal_prompts">
-            <item>What are three things you\'re grateful for today, and why?</item>
-            <item>Describe a challenge you faced recently and how you overcame it.</item>
-            <item>Write about a moment from your day that made you smile and why it had that effect on you.</item>
-            <item>What are three short-term goals you want to achieve in the next month, and what steps will you take to reach them?</item>
-            <item>Reflect on a mistake you made and the lessons you learned from it.</item>
-            <item>Describe a place that brings you peace and why it has that effect on you.</item>
-            <item>Write a letter to your future self, detailing your hopes and aspirations.</item>
-            <item>List five things that make you unique and special.</item>
-            <item>Explore a hobby or interest you\'ve been curious about but haven\'t tried yet.</item>
-            <item>What are your top priorities in life right now, and how do you plan to balance them?</item>
-            <item>Write about a book, movie, or piece of art that had a profound impact on you and why.</item>
-            <item>Reflect on a moment when you stepped out of your comfort zone and what you gained from the experience.</item>
-            <item>Explore your favorite childhood memories and the emotions associated with them.</item>
-            <item>Describe the kind of person you aspire to be and the steps you can take to become that person.</item>
-            <item>What are your strengths, and how can you leverage them to achieve your goals?</item>
-            <item>Write about a time when you felt proud of yourself and the achievements that led to that feeling.</item>
-            <item>Explore a fear or insecurity you have and brainstorm ways to overcome it.</item>
-            <item>Create a bucket list of experiences you want to have in your lifetime.</item>
-            <item>Reflect on a relationship in your life and the positive impact it has had on you.</item>
-            <item>What are some habits you want to cultivate or break, and how can you work towards those changes?</item>
-        </string-array>
+    <string-array name="journal_prompts">
+        <item>What are three things you\'re grateful for today, and why?</item>
+        <item>Describe a challenge you faced recently and how you overcame it.</item>
+        <item>Write about a moment from your day that made you smile and why it had that effect on you.</item>
+        <item>What are three short-term goals you want to achieve in the next month, and what steps will you take to reach them?</item>
+        <item>Reflect on a mistake you made and the lessons you learned from it.</item>
+        <item>Describe a place that brings you peace and why it has that effect on you.</item>
+        <item>Write a letter to your future self, detailing your hopes and aspirations.</item>
+        <item>List five things that make you unique and special.</item>
+        <item>Explore a hobby or interest you\'ve been curious about but haven\'t tried yet.</item>
+        <item>What are your top priorities in life right now, and how do you plan to balance them?</item>
+        <item>Write about a book, movie, or piece of art that had a profound impact on you and why.</item>
+        <item>Reflect on a moment when you stepped out of your comfort zone and what you gained from the experience.</item>
+        <item>Explore your favorite childhood memories and the emotions associated with them.</item>
+        <item>Describe the kind of person you aspire to be and the steps you can take to become that person.</item>
+        <item>What are your strengths, and how can you leverage them to achieve your goals?</item>
+        <item>Write about a time when you felt proud of yourself and the achievements that led to that feeling.</item>
+        <item>Explore a fear or insecurity you have and brainstorm ways to overcome it.</item>
+        <item>Create a bucket list of experiences you want to have in your lifetime.</item>
+        <item>Reflect on a relationship in your life and the positive impact it has had on you.</item>
+        <item>What are some habits you want to cultivate or break, and how can you work towards those changes?</item>
+    </string-array>
 </resources>
