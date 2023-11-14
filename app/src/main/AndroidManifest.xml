@@ -18,6 +18,9 @@
         android:theme="@style/Theme.JournallingApp"
         tools:targetApi="31">
         <activity
+            android:name=".ViewEntryActivity"
+            android:exported="false" />
+        <activity
             android:name=".NewEntryActivity"
             android:exported="false" />
         <activity

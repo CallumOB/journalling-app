@@ -2,6 +2,7 @@
     <string name="app_name">Journalling App</string>
     <string name="new_entry">New Entry</string>
     <string name="entry_editText">Write your entry...</string>
+    <string name="view_entry">View Entry</string>
 
     <string-array name="journal_prompts">
         <item>What are three things you\'re grateful for today, and why?</item>
