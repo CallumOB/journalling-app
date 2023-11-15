@@ -28,11 +28,66 @@
 
         <ImageButton
             android:id="@+id/imageButton"
-            android:layout_width="56dp"
-            android:layout_height="49dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             app:srcCompat="@drawable/ic_delete"
             android:layout_gravity="end"
             android:layout_marginEnd="5dp"
             android:contentDescription="Delete Entry" />
     </androidx.appcompat.widget.Toolbar>
+
+    <TextView
+        android:id="@+id/viewEntryPrompt"
+        android:layout_width="387dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="12dp"
+        android:text='"Example Prompt?"'
+        android:textColor="@color/quartz"
+        android:textSize="16sp"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleToolbar" />
+
+    <TextView
+        android:id="@+id/viewEntryDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:text="13/11/23, 10:55 a.m."
+        app:layout_constraintBottom_toTopOf="@+id/viewEntryPrompt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleToolbar" />
+
+    <TextView
+        android:id="@+id/viewEntryLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="20dp"
+        android:text="Dublin, Ireland"
+        app:layout_constraintBottom_toTopOf="@+id/viewEntryPrompt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleToolbar" />
+
+    <TextView
+        android:id="@+id/viewEntryText"
+        android:layout_width="384dp"
+        android:layout_height="445dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewEntryPrompt" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

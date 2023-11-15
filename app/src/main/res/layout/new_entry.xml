@@ -42,6 +42,22 @@
         app:layout_constraintTop_toBottomOf="@+id/titleToolbar" />
 
     <EditText
+        android:id="@+id/newEntryTitle"
+        android:layout_width="380dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="12dp"
+        android:ems="10"
+        android:inputType="text"
+        android:hint="@string/new_entry_name"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.428"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/newEntryDate" />
+
+    <EditText
         android:id="@+id/newEntryText"
         android:layout_width="380dp"
         android:layout_height="270dp"
@@ -51,7 +67,7 @@
         android:ems="10"
         android:inputType="text"
         android:singleLine="false"
-        android:text="@string/entry_editText"
+        android:hint="@string/entry_editText"
         android:textAlignment="textStart"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -94,21 +110,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/newEntryTitle"
-        android:layout_width="380dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="12dp"
-        android:ems="10"
-        android:inputType="text"
-        android:text="Name"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.428"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/newEntryDate" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

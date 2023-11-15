@@ -13,6 +13,14 @@ public class Entry {
     private String location;
     private String date;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }

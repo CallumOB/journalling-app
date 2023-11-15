@@ -18,6 +18,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -74,7 +75,7 @@ public class NewEntryActivity extends AppCompatActivity {
                 String entry_name = name.getText().toString();
                 String entry_contents = contents.getText().toString();
                 String entry_prompt = prompt.getText().toString();
-                String entry_location = location.getText().toString();
+                String entry_location = "Dublin, Ireland";//location.getText().toString();
                 String entry_date = date.getText().toString();
 
                 if (entry_name.length() == 0 ||
@@ -82,7 +83,8 @@ public class NewEntryActivity extends AppCompatActivity {
                     entry_prompt.length() == 0 ||
                     entry_location == null ||
                     entry_date.length() == 0) {
-                    Toast.makeText(NewEntryActivity.this, "Please enter all details and ensure location permissions have been granted.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(NewEntryActivity.this, "Please enter all details and ensure location permissions have been granted.",
+                            Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -124,7 +126,7 @@ public class NewEntryActivity extends AppCompatActivity {
 
         LocationManager location_manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         // If the app doesn't have location permissions, they will be requested
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             requestLocationPermission();
         }
@@ -134,16 +136,18 @@ public class NewEntryActivity extends AppCompatActivity {
             double latitude = current_location.getLatitude();
             double longitude = current_location.getLongitude();
 
+            Log.i("Message", "Returning Coordinates");
             return getLocationFromCoords(latitude, longitude);
         }
 
         // if location can't be found null is returned, used for error checking
+        Log.i("Message", "Could not get coordinates");
         return null;
     }
 
     private void requestLocationPermission() {
         /* Code referenced from https://youtu.be/SMrB97JuIoM?si=FmdFO62dxNkD_nx4 */
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
             new AlertDialog.Builder(this)
                     .setTitle("Location Permission Needed")
                     .setMessage("Your location is needed to set the location of your new entry.")
@@ -151,7 +155,7 @@ public class NewEntryActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             ActivityCompat.requestPermissions(NewEntryActivity.this, new String[]
-                                    {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_CODE);
+                                    {Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_CODE);
                         }
                     })
                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -162,7 +166,7 @@ public class NewEntryActivity extends AppCompatActivity {
                     })
                     .create().show();
         } else {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_CODE);
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_CODE);
         }
     }
 
@@ -174,6 +178,7 @@ public class NewEntryActivity extends AppCompatActivity {
             String city_name = addresses.get(0).getLocality();
             String country_name = addresses.get(0).getCountryName();
 
+            Log.i("IT472", "Returning City Name");
             return city_name + ", " + country_name;
         } catch (IOException e) {
             e.printStackTrace();

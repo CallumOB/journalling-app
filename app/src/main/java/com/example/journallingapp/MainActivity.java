@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -38,6 +39,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // create new intent for displaying existing entry
+                Intent intent = new Intent(MainActivity.this, ViewEntryActivity.class);
+                Bundle b = new Bundle();
+                b.putInt("entry_id", v.getId());
+                intent.putExtras(b);
+                startActivity(intent);
             }
         });
 
@@ -45,9 +51,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // create new intent for creating a new entry
+                Intent intent = new Intent(MainActivity.this, NewEntryActivity.class);
+                startActivity(intent);
             }
         });
 
+        loadEntries();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         loadEntries();
     }
 
