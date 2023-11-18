@@ -65,9 +65,9 @@ public class NewEntryActivity extends AppCompatActivity {
                 .getEntryDao();
 
         // displays a random journalling prompt from the array in string.xml
-        prompt.setText(prompt_array[random_prompt.nextInt(20)]);
+        prompt.setText("\"" + prompt_array[random_prompt.nextInt(20)] + "\"");
         date.setText(getSystemTime());
-        location.setText(getSystemLocation());
+        location.setText("Dublin, Ireland");  //getSystemLocation());
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,7 +75,7 @@ public class NewEntryActivity extends AppCompatActivity {
                 String entry_name = name.getText().toString();
                 String entry_contents = contents.getText().toString();
                 String entry_prompt = prompt.getText().toString();
-                String entry_location = "Dublin, Ireland";//location.getText().toString();
+                String entry_location = "Dublin, Ireland"; //location.getText().toString();
                 String entry_date = date.getText().toString();
 
                 if (entry_name.length() == 0 ||
@@ -83,7 +83,7 @@ public class NewEntryActivity extends AppCompatActivity {
                     entry_prompt.length() == 0 ||
                     entry_location == null ||
                     entry_date.length() == 0) {
-                    Toast.makeText(NewEntryActivity.this, "Please enter all details and ensure location permissions have been granted.",
+                    Toast.makeText(NewEntryActivity.this, "Please enter all details.",
                             Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -116,30 +116,19 @@ public class NewEntryActivity extends AppCompatActivity {
 
     private String getSystemLocation() {
         /* Code referenced from a few places.
-        Getting Longitude and Latitude:
-        - https://www.tutorialspoint.com/how-to-get-current-location-latitude-and-longitude-in-android
         Checking for granted permissions:
         - https://developer.android.com/training/permissions/requesting
         Asking for permissions during runtime:
         - https://youtu.be/SMrB97JuIoM?si=FmdFO62dxNkD_nx4
          */
 
-        LocationManager location_manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         // If the app doesn't have location permissions, they will be requested
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             requestLocationPermission();
         }
-        Location current_location = location_manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        if (current_location != null) {
-            double latitude = current_location.getLatitude();
-            double longitude = current_location.getLongitude();
-
-            Log.i("Message", "Returning Coordinates");
-            return getLocationFromCoords(latitude, longitude);
-        }
-
+        // TODO get longitude and latitude, pass to getLocationFromCoords();
         // if location can't be found null is returned, used for error checking
         Log.i("Message", "Could not get coordinates");
         return null;
@@ -178,12 +167,12 @@ public class NewEntryActivity extends AppCompatActivity {
             String city_name = addresses.get(0).getLocality();
             String country_name = addresses.get(0).getCountryName();
 
-            Log.i("IT472", "Returning City Name");
             return city_name + ", " + country_name;
         } catch (IOException e) {
             e.printStackTrace();
         }
         // if location can't be found null is returned, used for error checking
+        Log.i("Message", "Location could not be found from coordinates");
         return null;
     }
 }

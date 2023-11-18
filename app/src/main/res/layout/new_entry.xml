@@ -30,13 +30,13 @@
         android:id="@+id/newEntryPrompt"
         android:layout_width="387dp"
         android:layout_height="70dp"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="14dp"
-        android:layout_marginEnd="12dp"
+        android:layout_marginEnd="15dp"
         android:text='"Example Prompt?"'
+        android:textColor="@color/quartz"
         android:textSize="16sp"
         android:textStyle="italic"
-        android:textColor="@color/quartz"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titleToolbar" />
@@ -97,7 +97,8 @@
         android:text="Dublin, Ireland"
         app:layout_constraintBottom_toTopOf="@+id/newEntryTitle"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/newEntryPrompt" />
+        app:layout_constraintTop_toBottomOf="@+id/newEntryPrompt"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/newEntrySubmit"
