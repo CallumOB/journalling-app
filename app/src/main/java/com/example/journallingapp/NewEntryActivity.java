@@ -1,21 +1,17 @@
 package com.example.journallingapp;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.room.Room;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteConstraintException;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,33 +23,40 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-public class NewEntryActivity extends AppCompatActivity {
+public class NewEntryActivity extends AppCompatActivity implements LocationListener {
 
     private EntryDao entry_dao;
     private TextView prompt;
     private TextView date;
-    private TextView location;
+    private TextView location_text;
     private EditText name;
     private EditText contents;
     private Button submit;
     private int LOCATION_PERMISSION_CODE = 1;
     private String[] prompt_array;
     private Random random_prompt = new Random();
+    private LocationManager locationManager;
+    private long minTime = 1;
+    private float minDistance = 1;
+    private double latitude;
+    private double longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_entry);
 
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         prompt = findViewById(R.id.newEntryPrompt);
         date = findViewById(R.id.newEntryDate);
-        location = findViewById(R.id.newEntryLocation);
+        location_text = findViewById(R.id.newEntryLocation);
         name = findViewById(R.id.newEntryTitle);
         contents = findViewById(R.id.newEntryText);
         submit = findViewById(R.id.newEntrySubmit);
@@ -64,10 +67,11 @@ public class NewEntryActivity extends AppCompatActivity {
                 .build()
                 .getEntryDao();
 
+        getSystemLocation();
+
         // displays a random journalling prompt from the array in string.xml
         prompt.setText("\"" + prompt_array[random_prompt.nextInt(20)] + "\"");
         date.setText(getSystemTime());
-        location.setText("Dublin, Ireland");  //getSystemLocation());
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,8 +79,10 @@ public class NewEntryActivity extends AppCompatActivity {
                 String entry_name = name.getText().toString();
                 String entry_contents = contents.getText().toString();
                 String entry_prompt = prompt.getText().toString();
-                String entry_location = "Dublin, Ireland"; //location.getText().toString();
+                String entry_location = location_text.getText().toString();
                 String entry_date = date.getText().toString();
+                double entry_lat = latitude;
+                double entry_long = longitude;
 
                 if (entry_name.length() == 0 ||
                     entry_contents.length() == 0 ||
@@ -94,6 +100,8 @@ public class NewEntryActivity extends AppCompatActivity {
                 new_entry.setPrompt(entry_prompt);
                 new_entry.setLocation(entry_location);
                 new_entry.setDate(entry_date);
+                new_entry.setLatitude(entry_lat);
+                new_entry.setLongitude(entry_long);
 
                 try {
                     entry_dao.insert(new_entry);
@@ -114,7 +122,7 @@ public class NewEntryActivity extends AppCompatActivity {
         return date_format.format(current_date);
     }
 
-    private String getSystemLocation() {
+    private void getSystemLocation() {
         /* Code referenced from a few places.
         Checking for granted permissions:
         - https://developer.android.com/training/permissions/requesting
@@ -126,53 +134,75 @@ public class NewEntryActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             requestLocationPermission();
+        } else {
+            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (lastKnownLocation != null) {
+                // Update latitude and longitude
+                latitude = lastKnownLocation.getLatitude();
+                longitude = lastKnownLocation.getLongitude();
+                // Retrieve location string from coordinates
+                getLocationFromCoords(latitude, longitude);
+            }
         }
+    }
 
-        // TODO get longitude and latitude, pass to getLocationFromCoords();
-        // if location can't be found null is returned, used for error checking
-        Log.i("Message", "Could not get coordinates");
-        return null;
+    @Override // runs after permissions dialog exits
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+            Toast.makeText(this, "Location permissions are required.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void requestLocationPermission() {
-        /* Code referenced from https://youtu.be/SMrB97JuIoM?si=FmdFO62dxNkD_nx4 */
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Location Permission Needed")
-                    .setMessage("Your location is needed to set the location of your new entry.")
-                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions(NewEntryActivity.this, new String[]
-                                    {Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_CODE);
-                        }
-                    })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .create().show();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_CODE);
+        /* Code referenced from Lab 9 */
+        if (ActivityCompat.checkSelfPermission(NewEntryActivity.this, // if permissions are not granted ...
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(NewEntryActivity.this, // ... a permission request will be sent
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION_CODE);
+        }else{
+            // if location permissions have been granted, a location update is requested
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, this);
         }
     }
 
-    private String getLocationFromCoords(double latitude, double longitude) {
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-        String current_location = "";
-        try {
-            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            String city_name = addresses.get(0).getLocality();
-            String country_name = addresses.get(0).getCountryName();
-
-            return city_name + ", " + country_name;
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void onLocationChanged(Location location) {
+        Log.d("Location", "Location Change Detected");
+        if (location != null) {
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+            getLocationFromCoords(latitude, longitude);
         }
-        // if location can't be found null is returned, used for error checking
-        Log.i("Message", "Location could not be found from coordinates");
-        return null;
+    }
+
+    private void getLocationFromCoords(double latitude, double longitude) {
+        Geocoder geocoder = new Geocoder(NewEntryActivity.this, Locale.getDefault());
+        List<Address> addresses = new ArrayList<>();
+        try {
+            addresses = geocoder.getFromLocation(latitude, longitude, 1);
+
+            if (addresses.isEmpty()) {
+                location_text.setText("Getting Location...");
+            } else {
+                if (addresses.size() > 0) {
+                    int size = addresses.size() - 1;
+                    String city_name = addresses.get(0).getLocality();
+                    String country_name = addresses.get(0).getCountryName();
+
+                    location_text.setText(city_name + ", " + country_name);
+                } else {
+                    Log.i("Message", "Location could not be found from coordinates");
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // if location can't be found null is returned, used for error checking
+            Log.i("Message", "Location could not be found from coordinates");
+        }
     }
 }
