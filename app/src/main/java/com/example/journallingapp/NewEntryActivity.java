@@ -43,7 +43,7 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
     private String[] prompt_array;
     private Random random_prompt = new Random();
     private LocationManager locationManager;
-    private long minTime = 1;
+    private long minTime = 500;
     private float minDistance = 1;
     private double latitude;
     private double longitude;
@@ -135,14 +135,8 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
                 != PackageManager.PERMISSION_GRANTED) {
             requestLocationPermission();
         } else {
-            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (lastKnownLocation != null) {
-                // Update latitude and longitude
-                latitude = lastKnownLocation.getLatitude();
-                longitude = lastKnownLocation.getLongitude();
-                // Retrieve location string from coordinates
-                getLocationFromCoords(latitude, longitude);
-            }
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, this);
+            getLocationFromCoords(latitude, longitude);
         }
     }
 
@@ -181,17 +175,18 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
 
     private void getLocationFromCoords(double latitude, double longitude) {
         Geocoder geocoder = new Geocoder(NewEntryActivity.this, Locale.getDefault());
-        List<Address> addresses = new ArrayList<>();
         try {
-            addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            Log.i("UserDebug", ("Latitude: " + latitude + " Longitude: " + longitude));
 
             if (addresses.isEmpty()) {
                 location_text.setText("Getting Location...");
             } else {
                 if (addresses.size() > 0) {
                     int size = addresses.size() - 1;
-                    String city_name = addresses.get(0).getLocality();
-                    String country_name = addresses.get(0).getCountryName();
+                    Log.i("UserDebug", ("Size of address list: " + size));
+                    String city_name = addresses.get(size).getLocality();
+                    String country_name = addresses.get(size).getCountryName();
 
                     location_text.setText(city_name + ", " + country_name);
                 } else {
@@ -204,5 +199,18 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
             // if location can't be found null is returned, used for error checking
             Log.i("Message", "Location could not be found from coordinates");
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        locationManager.removeUpdates(this);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getSystemLocation();
     }
 }
