@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
                 .getEntryDao();
 
         entry_adapter = new EntryRecyclerAdapter(this, new ArrayList<Entry>());
+        entry_view.setAdapter(entry_adapter);
         entry_adapter.addOnClickListener(new EntryRecyclerAdapter.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -32,6 +32,7 @@ import java.util.Random;
 
 public class NewEntryActivity extends AppCompatActivity implements LocationListener {
 
+    private BackgroundThread bg_thread;
     private EntryDao entry_dao;
     private TextView prompt;
     private TextView date;
@@ -53,6 +54,9 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_entry);
 
+        bg_thread = new BackgroundThread();
+        bg_thread.start();
+
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         prompt = findViewById(R.id.newEntryPrompt);
         date = findViewById(R.id.newEntryDate);
@@ -67,10 +71,9 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
                 .build()
                 .getEntryDao();
 
-        getSystemLocation();
-
         // displays a random journalling prompt from the array in string.xml
         prompt.setText("\"" + prompt_array[random_prompt.nextInt(20)] + "\"");
+        location_text.setText("Getting Location...");
         date.setText(getSystemTime());
 
         submit.setOnClickListener(new View.OnClickListener() {
@@ -112,6 +115,14 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
                 }
             }
         });
+
+        Runnable location_thread = () -> {
+            Log.i("location_thread", "Checking for location permissions...");
+            getSystemLocation();
+            Log.i("location_thread", "Thread completed");
+        };
+
+        bg_thread.addTaskToMessageQueue(location_thread);
     }
 
     private String getSystemTime() {
@@ -136,7 +147,6 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
             requestLocationPermission();
         } else {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, this);
-            getLocationFromCoords(latitude, longitude);
         }
     }
 
@@ -165,11 +175,19 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
     }
 
     public void onLocationChanged(Location location) {
-        Log.d("Location", "Location Change Detected");
+        Log.d("new_location", "Location Change Detected, Latitude: "
+                + location.getLatitude() + " Longitude: " + location.getLongitude());
         if (location != null) {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
-            getLocationFromCoords(latitude, longitude);
+
+            Runnable get_location = () -> {
+                Log.i("get_location", "Getting location from coordinates...");
+                getLocationFromCoords(latitude, longitude);
+                Log.i("get_location", "Thread completed");
+            };
+//            getLocationFromCoords(latitude, longitude);
+            bg_thread.addTaskToMessageQueue(get_location);
         }
     }
 
@@ -177,21 +195,22 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
         Geocoder geocoder = new Geocoder(NewEntryActivity.this, Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            Log.i("UserDebug", ("Latitude: " + latitude + " Longitude: " + longitude));
+            Log.i("get_location", ("Latitude: " + latitude + " Longitude: " + longitude));
 
-            if (addresses.isEmpty()) {
-                location_text.setText("Getting Location...");
+            if (!addresses.isEmpty() && addresses.size() > 0) {
+                int size = addresses.size() - 1;
+                Log.i("get_location", ("Size of address list: " + size));
+                String city_name = addresses.get(size).getLocality();
+                String country_name = addresses.get(size).getCountryName();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        location_text.setText(city_name + ", " + country_name);
+                    }
+                });
             } else {
-                if (addresses.size() > 0) {
-                    int size = addresses.size() - 1;
-                    Log.i("UserDebug", ("Size of address list: " + size));
-                    String city_name = addresses.get(size).getLocality();
-                    String country_name = addresses.get(size).getCountryName();
-
-                    location_text.setText(city_name + ", " + country_name);
-                } else {
-                    Log.i("Message", "Location could not be found from coordinates");
-                }
+                Log.i("get_location", "No address found");
             }
 
         } catch (Exception e) {
@@ -211,6 +230,5 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
     @Override
     protected void onResume() {
         super.onResume();
-        getSystemLocation();
     }
 }
