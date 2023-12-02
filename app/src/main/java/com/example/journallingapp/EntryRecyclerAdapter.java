@@ -20,18 +20,18 @@ public class EntryRecyclerAdapter extends RecyclerView.Adapter<EntryRecyclerAdap
     * https://stackoverflow.com/questions/24471109/recyclerview-onclick?page=1&tab=scoredesc#tab-top
     * */
     interface OnClickListener {
-        void onClick(View view);
+        void onClick(Entry entry);
     }
 
     private Context context;
-    private List<Entry> entry_list;
+    private List<Entry> entryList;
     private OnClickListener listener;
 
     public void addOnClickListener(OnClickListener listener) {this.listener = listener;}
 
     public EntryRecyclerAdapter(Context context, List<Entry> entries) {
         this.context = context;
-        this.entry_list = entries;
+        this.entryList = entries;
     }
 
     @Override
@@ -49,41 +49,46 @@ public class EntryRecyclerAdapter extends RecyclerView.Adapter<EntryRecyclerAdap
 
     @Override
     public int getItemCount() {
-        return entry_list.size();
+        return entryList.size();
     }
 
     void updateData(List<Entry> entries) {
-        this.entry_list = entries;
+        this.entryList = entries;
         notifyDataSetChanged();
     }
 
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        private TextView entry_title;
-        private TextView entry_location;
-        private TextView entry_date;
+        private TextView entryTitle;
+        private TextView entryLocation;
+        private TextView entryDate;
 
         ViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener((View.OnClickListener) this);
-            entry_title = itemView.findViewById(R.id.entryTitle);
-            entry_location = itemView.findViewById(R.id.entryLocation);
-            entry_date = itemView.findViewById(R.id.entryDate);
+            entryTitle = itemView.findViewById(R.id.entryTitle);
+            entryLocation = itemView.findViewById(R.id.entryLocation);
+            entryDate = itemView.findViewById(R.id.entryDate);
         }
 
         void bindData(int position) {
-            Entry entry = entry_list.get(position);
-            entry_title.setText(entry.getName());
-            entry_location.setText(entry.getLocation());
-            entry_date.setText(entry.getDate().toString());
+            Entry entry = entryList.get(position);
+            entryTitle.setText(entry.getName());
+            entryLocation.setText(entry.getLocation());
+            entryDate.setText(entry.getDate());
         }
 
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition();
             if (listener != null) {
-            // add functionality here for new intent and extras to view the given entry
+                Entry entry = entryList.get(position);
+                listener.onClick(entry);
             }
         }
+    }
+
+    void setOnClickListener(OnClickListener listener) {
+        this.listener = listener;
     }
 }
