@@ -8,7 +8,7 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/titleToolbar"
-        android:layout_width="409dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/main_purple"
         android:minHeight="?attr/actionBarSize"
@@ -25,30 +25,25 @@
             android:text="@string/view_entry"
             android:textColor="@color/white"
             android:textSize="20dp" />
-
-        <ImageButton
-            android:id="@+id/imageButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            app:srcCompat="@drawable/ic_delete"
-            android:layout_gravity="end"
-            android:layout_marginEnd="5dp"
-            android:contentDescription="Delete Entry" />
     </androidx.appcompat.widget.Toolbar>
 
     <TextView
         android:id="@+id/viewEntryPrompt"
-        android:layout_width="387dp"
+        android:layout_width="wrap_content"
         android:layout_height="70dp"
+        android:layout_gravity="center"
         android:layout_marginStart="12dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="60dp"
         android:layout_marginEnd="12dp"
+        android:paddingStart="20dp"
+        android:paddingTop="20dp"
+        android:paddingEnd="20dp"
         android:text='"Example Prompt?"'
         android:textColor="@color/quartz"
         android:textSize="16sp"
         android:textStyle="italic"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titleToolbar" />
 
@@ -79,13 +74,14 @@
     <TextView
         android:id="@+id/viewEntryText"
         android:layout_width="384dp"
-        android:layout_height="445dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
         android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/viewEntryPrompt" />

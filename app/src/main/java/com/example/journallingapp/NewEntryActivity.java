@@ -21,9 +21,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -32,17 +30,17 @@ import java.util.Random;
 
 public class NewEntryActivity extends AppCompatActivity implements LocationListener {
 
-    private BackgroundThread bg_thread;
-    private EntryDao entry_dao;
+    private BackgroundThread bgThread;
+    private EntryDao entryDao;
     private TextView prompt;
     private TextView date;
-    private TextView location_text;
+    private TextView locationText;
     private EditText name;
     private EditText contents;
     private Button submit;
     private int LOCATION_PERMISSION_CODE = 1;
-    private String[] prompt_array;
-    private Random random_prompt = new Random();
+    private String[] PROMPT_ARRAY;
+    private Random randomPrompt = new Random();
     private LocationManager locationManager;
     private long minTime = 500;
     private float minDistance = 1;
@@ -54,60 +52,60 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_entry);
 
-        bg_thread = new BackgroundThread();
-        bg_thread.start();
+        bgThread = new BackgroundThread();
+        bgThread.start();
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         prompt = findViewById(R.id.newEntryPrompt);
         date = findViewById(R.id.newEntryDate);
-        location_text = findViewById(R.id.newEntryLocation);
+        locationText = findViewById(R.id.newEntryLocation);
         name = findViewById(R.id.newEntryTitle);
         contents = findViewById(R.id.newEntryText);
         submit = findViewById(R.id.newEntrySubmit);
-        prompt_array = getResources().getStringArray(R.array.journal_prompts);
+        PROMPT_ARRAY = getResources().getStringArray(R.array.journal_prompts);
 
-        entry_dao = Room.databaseBuilder(this, EntryDatabase.class, "entry-db")
+        entryDao = Room.databaseBuilder(this, EntryDatabase.class, "entry-db")
                 .allowMainThreadQueries()
                 .build()
                 .getEntryDao();
 
         // displays a random journalling prompt from the array in string.xml
-        prompt.setText("\"" + prompt_array[random_prompt.nextInt(20)] + "\"");
-        location_text.setText("Getting Location...");
+        prompt.setText("\"" + PROMPT_ARRAY[randomPrompt.nextInt(20)] + "\"");
+        locationText.setText("Getting Location...");
         date.setText(getSystemTime());
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String entry_name = name.getText().toString();
-                String entry_contents = contents.getText().toString();
-                String entry_prompt = prompt.getText().toString();
-                String entry_location = location_text.getText().toString();
-                String entry_date = date.getText().toString();
-                double entry_lat = latitude;
-                double entry_long = longitude;
+                String entryName = name.getText().toString();
+                String entryContents = contents.getText().toString();
+                String entryPrompt = prompt.getText().toString();
+                String entryLocation = locationText.getText().toString();
+                String entryDate = date.getText().toString();
+                double entryLat = latitude;
+                double entryLong = longitude;
 
-                if (entry_name.length() == 0 ||
-                    entry_contents.length() == 0 ||
-                    entry_prompt.length() == 0 ||
-                    entry_location == null ||
-                    entry_date.length() == 0) {
+                if (entryName.length() == 0 ||
+                    entryContents.length() == 0 ||
+                    entryPrompt.length() == 0 ||
+                    entryLocation == null ||
+                    entryDate.length() == 0) {
                     Toast.makeText(NewEntryActivity.this, "Please enter all details.",
                             Toast.LENGTH_LONG).show();
                     return;
                 }
 
-                Entry new_entry = new Entry();
-                new_entry.setName(entry_name);
-                new_entry.setContents(entry_contents);
-                new_entry.setPrompt(entry_prompt);
-                new_entry.setLocation(entry_location);
-                new_entry.setDate(entry_date);
-                new_entry.setLatitude(entry_lat);
-                new_entry.setLongitude(entry_long);
+                Entry newEntry = new Entry();
+                newEntry.setName(entryName);
+                newEntry.setContents(entryContents);
+                newEntry.setPrompt(entryPrompt);
+                newEntry.setLocation(entryLocation);
+                newEntry.setDate(entryDate);
+                newEntry.setLatitude(entryLat);
+                newEntry.setLongitude(entryLong);
 
                 try {
-                    entry_dao.insert(new_entry);
+                    entryDao.insert(newEntry);
                     setResult(RESULT_OK);
                     finish();
                 } catch (SQLException e) {
@@ -116,21 +114,21 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
             }
         });
 
-        Runnable location_thread = () -> {
-            Log.i("location_thread", "Checking for location permissions...");
+        Runnable locationThread = () -> {
+            Log.i("PermissionCheck", "Checking for location permissions...");
             getSystemLocation();
-            Log.i("location_thread", "Thread completed");
+            Log.i("PermissionCheck", "Thread completed");
         };
 
-        bg_thread.addTaskToMessageQueue(location_thread);
+        bgThread.addTaskToMessageQueue(locationThread);
     }
 
     private String getSystemTime() {
         // The following code was referenced from javatpoint.com
         // https://www.javatpoint.com/java-date-to-string
-        Date current_date = Calendar.getInstance().getTime();
-        SimpleDateFormat date_format = new SimpleDateFormat("dd/MM/yyyy, hh:mm a");
-        return date_format.format(current_date);
+        Date currentDate = Calendar.getInstance().getTime();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy, hh:mm a");
+        return dateFormat.format(currentDate);
     }
 
     private void getSystemLocation() {
@@ -147,6 +145,7 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
             requestLocationPermission();
         } else {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, this);
+            getLocationFromCoords(latitude, longitude);
         }
     }
 
@@ -156,6 +155,9 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
 
         if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
             Toast.makeText(this, "Location permissions are required.", Toast.LENGTH_SHORT).show();
+            Log.w("PermissionCheck", "Location permissions not granted");
+        } else {
+            Log.i("PermissionCheck", "Location permissions granted");
         }
     }
 
@@ -171,6 +173,7 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
         }else{
             // if location permissions have been granted, a location update is requested
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, this);
+            Log.i("LocationManager", "Location updates requested");
         }
     }
 
@@ -182,12 +185,11 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
             longitude = location.getLongitude();
 
             Runnable get_location = () -> {
-                Log.i("get_location", "Getting location from coordinates...");
+                Log.i("LocationChange", "Getting location from coordinates...");
                 getLocationFromCoords(latitude, longitude);
-                Log.i("get_location", "Thread completed");
+                Log.i("LocationChange", "Thread completed");
             };
-//            getLocationFromCoords(latitude, longitude);
-            bg_thread.addTaskToMessageQueue(get_location);
+            bgThread.addTaskToMessageQueue(get_location);
         }
     }
 
@@ -195,28 +197,27 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
         Geocoder geocoder = new Geocoder(NewEntryActivity.this, Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            Log.i("get_location", ("Latitude: " + latitude + " Longitude: " + longitude));
+            Log.d("GetLocation", ("Latitude: " + latitude + " Longitude: " + longitude));
 
             if (!addresses.isEmpty() && addresses.size() > 0) {
                 int size = addresses.size() - 1;
-                Log.i("get_location", ("Size of address list: " + size));
-                String city_name = addresses.get(size).getLocality();
-                String country_name = addresses.get(size).getCountryName();
+                Log.d("GetLocation", ("Size of address list: " + size));
+                String cityName = addresses.get(size).getLocality();
+                String countryName = addresses.get(size).getCountryName();
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        location_text.setText(city_name + ", " + country_name);
+                        locationText.setText(cityName + ", " + countryName);
                     }
                 });
             } else {
-                Log.i("get_location", "No address found");
+                Log.w("GetLocation", "No address found");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            // if location can't be found null is returned, used for error checking
-            Log.i("Message", "Location could not be found from coordinates");
+            Log.w("GetLocation", "Location could not be found from coordinates");
         }
     }
 
