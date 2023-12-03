@@ -31,19 +31,20 @@ import java.util.Random;
 
 public class NewEntryActivity extends AppCompatActivity implements LocationListener {
 
+    // Used to run threads in the background using the Looper service
     private BackgroundThread bgThread;
-    private EntryDao entryDao;
-    private TextView prompt;
-    private TextView date;
-    private TextView locationText;
-    private EditText name;
-    private EditText contents;
-    private final Random randomPrompt = new Random();
-    private LocationManager locationManager;
-    private final long MIN_TIME = 5000;
-    private final float MIN_DISTANCE = 10;
-    private double latitude;
-    private double longitude;
+    private EntryDao entryDao; // Data access object
+    private TextView prompt; // The prompt to be displayed to the user
+    private TextView date; // The date and time of entry creation
+    private TextView locationText; // The formatted location of entry creation
+    private EditText name; // The name the user enters for the entry
+    private EditText contents; // The contents of the entry
+    private final Random randomPrompt = new Random(); // Used to show the user a random prompt
+    private LocationManager locationManager; // Used to get the user's location
+    private final long MIN_TIME = 5000; // The minimum time between location updates: 5 seconds
+    private final float MIN_DISTANCE = 10; // The minimum distance between location updates: 10m
+    private double latitude; // The latitude of the user at the time of entry creation
+    private double longitude; // The longitude of the user at the time of entry creation
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +52,7 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
         setContentView(R.layout.new_entry);
 
         bgThread = new BackgroundThread();
-        bgThread.start();
+        bgThread.start(); // Starts the looper service and initialises a Handler object
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         prompt = findViewById(R.id.newEntryPrompt);
@@ -67,9 +68,9 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
                 .build()
                 .getEntryDao();
 
-        // displays a random journalling prompt from the array in string.xml
+        // Displays a random journalling prompt from the array in string.xml
         prompt.setText("\"" + PROMPT_ARRAY[randomPrompt.nextInt(20)] + "\"");
-        locationText.setText("Getting Location...");
+        locationText.setText("Getting Location..."); // Temporary text while location is retrieved
         date.setText(getSystemTime());
 
         submit.setOnClickListener(v -> {
@@ -81,16 +82,25 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
             double entryLat = latitude;
             double entryLong = longitude;
 
+            // All values must be valid to submit the entry
             if (entryName.length() == 0 ||
                 entryContents.length() == 0 ||
                 entryPrompt.length() == 0 ||
-                !entryLocation.equals("Getting Location...") ||
+                entryLocation.equals("Getting Location...") ||
                 entryDate.length() == 0) {
-                Toast.makeText(NewEntryActivity.this, "Please enter all details.",
-                        Toast.LENGTH_LONG).show();
+                // The user is shown a message if the entry is not ready for submission
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(NewEntryActivity.this,
+                            "Please grant location permissions.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(NewEntryActivity.this, "Please enter all details.",
+                            Toast.LENGTH_LONG).show();
+                }
                 return;
             }
 
+            // Setting all values for DB insertion
             Entry newEntry = new Entry();
             newEntry.setName(entryName);
             newEntry.setContents(entryContents);
@@ -102,13 +112,15 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
 
             try {
                 entryDao.insert(newEntry);
-                setResult(RESULT_OK);
                 finish();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         });
 
+        /* The system location is retrieved in a thread.
+         * Without the thread the app freezes until the location is found.
+         * That's because the UI thread is fully utilised through getting the location. */
         Runnable locationThread = () -> {
             Log.i("PermissionCheck", "Checking for location permissions...");
             getSystemLocation();
@@ -118,6 +130,10 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
         bgThread.addTaskToMessageQueue(locationThread);
     }
 
+    /**
+     * Gets the current system time and returns a string in the format 03/12/2023, 4:58 PM
+     * @return A string containing the current system time.
+     */
     private String getSystemTime() {
         // The following code was referenced from javatpoint.com
         // https://www.javatpoint.com/java-date-to-string
@@ -126,6 +142,11 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
         return dateFormat.format(currentDate);
     }
 
+    /**
+     * This method is used to get the user's location.
+     * It checks for location permissions and requests them if they are not granted.
+     * If the permissions are granted, the location is retrieved.
+     */
     private void getSystemLocation() {
         /* Code referenced from a few places.
         Checking for granted permissions:
@@ -139,13 +160,14 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
                 != PackageManager.PERMISSION_GRANTED) {
             requestLocationPermission();
         } else {
+            // If permissions have been granted, a location update is requested
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                     MIN_TIME, MIN_DISTANCE, this);
             getLocationFromCoords(latitude, longitude);
         }
     }
 
-    @Override // runs after permissions dialog exits
+    @Override // Runs after permissions dialog exits.
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
@@ -158,30 +180,24 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
         }
     }
 
+    /**
+     * This method is used to request location permissions from the user.
+     */
     private void requestLocationPermission() {
-        /* Code referenced from Lab 9 */
-        if (ActivityCompat.checkSelfPermission(NewEntryActivity.this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            int LOCATION_PERMISSION_CODE = 1;
-            ActivityCompat.requestPermissions(NewEntryActivity.this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    LOCATION_PERMISSION_CODE);
-        }else{
-            // if location permissions have been granted, a location update is requested
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    MIN_TIME, MIN_DISTANCE, this);
-            Log.i("LocationManager", "Location updates requested");
-        }
+        int LOCATION_PERMISSION_CODE = 1;
+        ActivityCompat.requestPermissions(NewEntryActivity.this,
+            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                LOCATION_PERMISSION_CODE);
     }
 
     public void onLocationChanged(Location location) {
         Log.d("new_location", "Location Change Detected, Latitude: "
                 + location.getLatitude() + " Longitude: " + location.getLongitude());
+        // These values are stored in the DB for future use in the map fragment.
         latitude = location.getLatitude();
         longitude = location.getLongitude();
 
+        // This code runs on a separate thread so the UI does not freeze.
         Runnable get_location = () -> {
             Log.i("LocationChange", "Getting location from coordinates...");
             getLocationFromCoords(latitude, longitude);
@@ -190,6 +206,11 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
         bgThread.addTaskToMessageQueue(get_location);
     }
 
+    /**
+     * This method is used to get a formatted location from the latitude and longitude.
+     * @param latitude The latitude of the user at the time of entry creation.
+     * @param longitude The longitude of the user at the time of entry creation.
+     */
     private void getLocationFromCoords(double latitude, double longitude) {
         Geocoder geocoder = new Geocoder(NewEntryActivity.this, Locale.getDefault());
         try {
@@ -202,15 +223,15 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
                 String cityName = addresses.get(size).getLocality();
                 String countryName = addresses.get(size).getCountryName();
 
-                /* sometimes a locality can't be found, so the admin area is used instead.
-                   The locality is tried first as it's more accurate. */
+                /* Sometimes a locality can't be found, so the admin area is used instead.
+                 * The locality is tried first as it's more specific. */
                 if (cityName == null) {
                     Log.w("GetLocation", "City name not found, trying admin area");
                     cityName = addresses.get(size).getAdminArea();
                 }
 
-                /* this is used because the use of an anonymous class (such as new Runnable())
-                   requires the variable to be final. */
+                /* This is used because the use of an anonymous class
+                 * requires the variable to be final. */
                 final String finalCityName = cityName;
 
                 runOnUiThread(() -> {
@@ -229,12 +250,14 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
     @Override
     protected void onPause() {
         super.onPause();
+        // The location manager is stopped to save battery life.
         locationManager.removeUpdates(this);
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        // A location update is requested when the activity is resumed.
+        getSystemLocation();
     }
 }

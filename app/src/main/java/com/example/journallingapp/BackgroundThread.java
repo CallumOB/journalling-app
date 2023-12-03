@@ -23,7 +23,7 @@ public class BackgroundThread extends Thread {
      * @param task The task being added to the handler message queue.
      */
     public void addTaskToMessageQueue(Runnable task) {
-        handler.post(task); // First task1 is added to the queue then task2.
+        handler.post(task);
     }
 
     public Handler getHandler() {

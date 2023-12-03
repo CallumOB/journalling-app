@@ -119,10 +119,10 @@ public class MapFragment extends Fragment {
         googleMap.addMarker(new MarkerOptions().position(entryLocation));
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(entryLocation, zoomLevel));
 
-        /* the following code is referenced from this link:
+        /* The following code is referenced from this link:
            https://developers.google.com/android/reference/com/google/android/gms/maps/UiSettings */
-        UiSettings uiSettings = googleMap.getUiSettings();
-        uiSettings.setZoomGesturesEnabled(true);
-        uiSettings.setScrollGesturesEnabled(true);
+        UiSettings uiSettings = googleMap.getUiSettings(); // Retrieves the UI Settings of the map
+        uiSettings.setZoomGesturesEnabled(true); // Allows the user to use zoom gestures
+        uiSettings.setScrollGesturesEnabled(true); // Allows the user to scroll around the map
     }
 }
