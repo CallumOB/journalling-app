@@ -17,8 +17,8 @@ public interface EntryDao {
     void update(Entry targetEntry);
 
     @Delete
-    void delete (Entry targetEntry);
+    void delete(Entry targetEntry);
 
-    @Query("SELECT * FROM ENTRY ORDER BY DATE DESC")
+    @Query("SELECT * FROM ENTRY ORDER BY id DESC")
     List<Entry> getEntries();
 }
