@@ -72,5 +72,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadEntries() {
-        entryAdapter.updateData(entryDao.getEntries());}
+        entryAdapter.updateData(entryDao.getEntries());
+    }
 }
