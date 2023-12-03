@@ -2,18 +2,18 @@ package com.example.journallingapp;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import java.util.Date;
+
 @Entity (tableName = "Entry")
 public class Entry {
     @PrimaryKey (autoGenerate = true)
-    private int id;
-    private String name;
-    private String contents;
-    private String prompt;
-    private String location;
-    private String date;
-    private double latitude;
-    private double longitude;
+    private int id; // Used as the primary key to identify each entry.
+    private String name; // The title of the entry.
+    private String contents; // The contents of the entry.
+    private String prompt; // The prompt that was shown to the user.
+    private String location; // The location of the entry as a string.
+    private String date; // The formatted date and time of writing.
+    private double latitude; // The latitude of the entry's location.
+    private double longitude; // The longitude of the entry's location.
 
     public int getId() {
         return id;

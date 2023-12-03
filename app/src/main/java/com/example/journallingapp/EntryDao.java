@@ -19,6 +19,11 @@ public interface EntryDao {
     @Delete
     void delete(Entry targetEntry);
 
+    // Returns all entries in the database. Used for the recycler view.
     @Query("SELECT * FROM ENTRY ORDER BY id DESC")
     List<Entry> getEntries();
+
+    // Returns a single entry from the database. Used for ViewEntryActivity.
+    @Query("SELECT * FROM ENTRY WHERE id = :id")
+    Entry getEntryById(int id);
 }
