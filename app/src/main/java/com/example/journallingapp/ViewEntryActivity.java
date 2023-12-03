@@ -6,19 +6,13 @@ import androidx.room.Room;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.fragment.app.Fragment;
 
 public class ViewEntryActivity extends AppCompatActivity {
 
-    private TextView viewEntryDate;
-    private TextView viewEntryLocation;
-    private TextView viewEntryPrompt;
-    private TextView viewEntryName;
-    private TextView viewEntryText;
-    private FloatingActionButton deleteEntry;
     private EntryDao entryDao;
 
     @Override
@@ -26,12 +20,13 @@ public class ViewEntryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_entry);
 
-        viewEntryDate = findViewById(R.id.viewEntryDate);
-        viewEntryLocation = findViewById(R.id.viewEntryLocation);
-        viewEntryPrompt = findViewById(R.id.viewEntryPrompt);
-        viewEntryName = findViewById(R.id.viewEntryTitle);
-        viewEntryText = findViewById(R.id.viewEntryText);
-        deleteEntry = findViewById(R.id.deleteEntry);
+        TextView viewEntryDate = findViewById(R.id.viewEntryDate);
+        TextView viewEntryLocation = findViewById(R.id.viewEntryLocation);
+        TextView viewEntryPrompt = findViewById(R.id.viewEntryPrompt);
+        TextView viewEntryName = findViewById(R.id.viewEntryTitle);
+        TextView viewEntryText = findViewById(R.id.viewEntryText);
+        FloatingActionButton deleteEntry = findViewById(R.id.deleteEntry);
+        Fragment mapView = new MapFragment();
 
         try {
             entryDao = Room.databaseBuilder(this, EntryDatabase.class, "entry-db")
@@ -42,50 +37,49 @@ public class ViewEntryActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        Entry currentEntry = entryDao.getEntries()
-                .get(findEntryIndex(getIntent().getExtras().getInt("entry_id")));
+        Entry currentEntry = entryDao.getEntryById(getIntent().getExtras().getInt("entry_id"));
         viewEntryDate.setText(currentEntry.getDate());
         viewEntryLocation.setText(currentEntry.getLocation());
         viewEntryPrompt.setText(currentEntry.getPrompt());
         viewEntryName.setText(currentEntry.getName());
         viewEntryText.setText(currentEntry.getContents());
 
-        deleteEntry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDeleteConfirmationDialog(currentEntry);
-            }
-        });
+        /* code referenced from
+        https://medium.com/@ahmetbostanciklioglu/how-to-pass-data-from-activity-to-fragment-37c2785b443
+        article covers kotlin, but the general idea is the same
+         */
+        shareWithFragment(mapView, currentEntry.getId());
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.mapFragment, mapView) // Check if YourFragment is instantiated correctly
+                .commit();
+
+        deleteEntry.setOnClickListener(v -> showDeleteConfirmationDialog(currentEntry));
     }
 
     private void showDeleteConfirmationDialog(Entry currentEntry) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Confirm Delete")
                 .setMessage("Are you sure you want to delete this entry?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // User clicked Yes, proceed with delete
-                        entryDao.delete(currentEntry);
-                        finish();
-                    }
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    // User clicked Yes, proceed with delete
+                    entryDao.delete(currentEntry);
+                    finish();
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // User clicked No, do nothing
-                        dialog.dismiss();
-                    }
+                .setNegativeButton("No", (dialog, which) -> {
+                    // User clicked No, do nothing
+                    dialog.dismiss();
                 })
                 .show();
     }
 
-    private int findEntryIndex(int entryId) {
-        for (int i = 0; i < entryDao.getEntries().size(); i++) {
-            if (entryDao.getEntries().get(i).getId() == entryId) {
-                return i;
-            }
-        }
-        return -1;
+    /* code referenced from
+        https://medium.com/@ahmetbostanciklioglu/how-to-pass-data-from-activity-to-fragment-37c2785b443
+        article covers kotlin, but the general idea is the same
+         */
+    private void shareWithFragment(Fragment fragment, int entryID) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("entry_id", entryID);
+        fragment.setArguments(bundle);
     }
 }

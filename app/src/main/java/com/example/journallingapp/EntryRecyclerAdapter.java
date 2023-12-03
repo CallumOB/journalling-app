@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -16,26 +17,22 @@ import java.util.List;
     - https://brightspace.tudublin.ie/d2l/le/content/286386/viewContent/2166893/View */
 public class EntryRecyclerAdapter extends RecyclerView.Adapter<EntryRecyclerAdapter.ViewHolder> {
 
-    /* Information about OnClickListener referenced from StackOverflow.
-    * https://stackoverflow.com/questions/24471109/recyclerview-onclick?page=1&tab=scoredesc#tab-top
-    * */
     interface OnClickListener {
         void onClick(Entry entry);
     }
 
-    private Context context;
+    private final Context context;
     private List<Entry> entryList;
     private OnClickListener listener;
-
-    public void addOnClickListener(OnClickListener listener) {this.listener = listener;}
 
     public EntryRecyclerAdapter(Context context, List<Entry> entries) {
         this.context = context;
         this.entryList = entries;
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.row_item,
                 parent, false);
         return new ViewHolder(view);
@@ -59,9 +56,9 @@ public class EntryRecyclerAdapter extends RecyclerView.Adapter<EntryRecyclerAdap
 
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        private TextView entryTitle;
-        private TextView entryLocation;
-        private TextView entryDate;
+        private final TextView entryTitle;
+        private final TextView entryLocation;
+        private final TextView entryDate;
 
         ViewHolder(View itemView) {
             super(itemView);

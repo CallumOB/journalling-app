@@ -1,3 +1,6 @@
+// some setup referenced from Google Maps API guide
+// https://developers.google.com/maps/documentation/android-sdk/config
+
 pluginManagement {
     repositories {
         google()

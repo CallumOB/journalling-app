@@ -20,7 +20,7 @@ public class BackgroundThread extends Thread {
     /**
      * This method is used to add different tasks to the message queue
      *
-     * @param task
+     * @param task The task being added to the handler message queue.
      */
     public void addTaskToMessageQueue(Runnable task) {
         handler.post(task); // First task1 is added to the queue then task2.
