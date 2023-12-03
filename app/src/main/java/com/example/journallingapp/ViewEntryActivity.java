@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -13,7 +12,7 @@ import androidx.fragment.app.Fragment;
 
 public class ViewEntryActivity extends AppCompatActivity {
 
-    private EntryDao entryDao;
+    private EntryDao entryDao; // Data access object
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +25,7 @@ public class ViewEntryActivity extends AppCompatActivity {
         TextView viewEntryName = findViewById(R.id.viewEntryTitle);
         TextView viewEntryText = findViewById(R.id.viewEntryText);
         FloatingActionButton deleteEntry = findViewById(R.id.deleteEntry);
-        Fragment mapView = new MapFragment();
+        Fragment mapView = new MapFragment(); // The fragment that will display the map.
 
         try {
             entryDao = Room.databaseBuilder(this, EntryDatabase.class, "entry-db")
@@ -44,19 +43,25 @@ public class ViewEntryActivity extends AppCompatActivity {
         viewEntryName.setText(currentEntry.getName());
         viewEntryText.setText(currentEntry.getContents());
 
-        /* code referenced from
-        https://medium.com/@ahmetbostanciklioglu/how-to-pass-data-from-activity-to-fragment-37c2785b443
-        article covers kotlin, but the general idea is the same
+        /* Code referenced from
+         * https://medium.com/@ahmetbostanciklioglu/how-to-pass-data-from-activity-to-fragment-37c2785b443
+         * Article covers kotlin, but the general idea is the same
          */
         shareWithFragment(mapView, currentEntry.getId());
 
+        /* Used to ensure the fragment displayed is the same one initialised above, so the correct
+         * arguments can be passed */
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.mapFragment, mapView) // Check if YourFragment is instantiated correctly
+                .replace(R.id.mapFragment, mapView)
                 .commit();
 
         deleteEntry.setOnClickListener(v -> showDeleteConfirmationDialog(currentEntry));
     }
 
+    /**
+     * This method is used to display a confirmation dialog when the user attempts to delete an entry.
+     * @param currentEntry The entry to be deleted.
+     */
     private void showDeleteConfirmationDialog(Entry currentEntry) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Confirm Delete")
@@ -73,11 +78,16 @@ public class ViewEntryActivity extends AppCompatActivity {
                 .show();
     }
 
-    /* code referenced from
-        https://medium.com/@ahmetbostanciklioglu/how-to-pass-data-from-activity-to-fragment-37c2785b443
-        article covers kotlin, but the general idea is the same
-         */
+    /**
+     * This method is used to pass data from the activity to the fragment.
+     * @param fragment The fragment to pass data to.
+     * @param entryID The id of the entry to be passed to the fragment.
+     */
     private void shareWithFragment(Fragment fragment, int entryID) {
+        /* Code referenced from
+         * https://medium.com/@ahmetbostanciklioglu/how-to-pass-data-from-activity-to-fragment-37c2785b443
+         * Article covers kotlin, but the general idea is the same
+         */
         Bundle bundle = new Bundle();
         bundle.putInt("entry_id", entryID);
         fragment.setArguments(bundle);

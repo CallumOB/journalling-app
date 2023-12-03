@@ -21,9 +21,9 @@ public class EntryRecyclerAdapter extends RecyclerView.Adapter<EntryRecyclerAdap
         void onClick(Entry entry);
     }
 
-    private final Context context;
-    private List<Entry> entryList;
-    private OnClickListener listener;
+    private final Context context; // The context from which the adapter is called.
+    private List<Entry> entryList; // A list of entries to be displayed in the recycler view.
+    private OnClickListener listener; // A listener for when an entry is clicked.
 
     public EntryRecyclerAdapter(Context context, List<Entry> entries) {
         this.context = context;
@@ -40,7 +40,6 @@ public class EntryRecyclerAdapter extends RecyclerView.Adapter<EntryRecyclerAdap
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-
         holder.bindData(position);
     }
 
@@ -49,16 +48,23 @@ public class EntryRecyclerAdapter extends RecyclerView.Adapter<EntryRecyclerAdap
         return entryList.size();
     }
 
+    /**
+     * Updates the data in the recycler view.
+     * @param entries The new list of entries to be displayed.
+     */
     void updateData(List<Entry> entries) {
         this.entryList = entries;
         notifyDataSetChanged();
     }
 
 
+    /**
+     * The ViewHolder containing all views needed to make up a row.
+     */
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        private final TextView entryTitle;
-        private final TextView entryLocation;
-        private final TextView entryDate;
+        private final TextView entryTitle; // The name of the entry
+        private final TextView entryLocation; // The formatted location of writing
+        private final TextView entryDate; // The formatted date the entry was written
 
         ViewHolder(View itemView) {
             super(itemView);

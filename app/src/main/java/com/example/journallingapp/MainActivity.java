@@ -15,15 +15,16 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EntryDao entryDao;
-    private EntryRecyclerAdapter entryAdapter;
+    private RecyclerView entryView;
+    private EntryDao entryDao; // Data access object
+    private EntryRecyclerAdapter entryAdapter; // Adapter for recycler view
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        RecyclerView entryView = findViewById(R.id.journalEntries);
+        entryView = findViewById(R.id.journalEntries);
         entryView.setLayoutManager(new LinearLayoutManager(this));
         FloatingActionButton addEntry = findViewById(R.id.addEntry);
 
@@ -34,10 +35,10 @@ public class MainActivity extends AppCompatActivity {
 
         entryAdapter = new EntryRecyclerAdapter(this, new ArrayList<>());
         entryAdapter.setOnClickListener(entry -> {
-            // create new intent for displaying existing entry
+            // Create new intent for displaying existing entry
             Intent intent = new Intent(MainActivity.this, ViewEntryActivity.class);
             Bundle b = new Bundle();
-            b.putInt("entry_id", entry.getId());
+            b.putInt("entry_id", entry.getId()); // Pass the id of the entry of be viewed
             intent.putExtras(b);
             Log.i("EntryAdapter", "Starting ViewEntryActivity, entry_id = " + entry.getId());
             startActivity(intent);
@@ -52,17 +53,28 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        Log.i("MainActivity", "Loading entries");
         loadEntries();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        // Ensures the list of entries is updated when the activity is resumed
         loadEntries();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Ensures the list of entries is updated when the activity is started
+        loadEntries();
+    }
+
+    /**
+     * Loads the entries from the database and updates the recycler view.
+     */
     public void loadEntries() {
+        Log.i("MainActivity", "Loading entries");
         entryAdapter.updateData(entryDao.getEntries());
     }
 }
