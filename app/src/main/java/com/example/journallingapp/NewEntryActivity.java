@@ -16,7 +16,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -93,9 +92,11 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
                         != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(NewEntryActivity.this,
                             "Please grant location permissions.", Toast.LENGTH_LONG).show();
+                    Log.e("NewEntryActivity", "Location permissions not granted");
                 } else {
                     Toast.makeText(NewEntryActivity.this, "Please enter all details.",
                             Toast.LENGTH_LONG).show();
+                    Log.e("NewEntryActivity", "Entry not ready for submission");
                 }
                 return;
             }
@@ -113,6 +114,7 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
             try {
                 entryDao.insert(newEntry);
                 finish();
+                Log.i("NewEntryActivity", "Entry submitted successfully");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -122,9 +124,9 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
          * Without the thread the app freezes until the location is found.
          * That's because the UI thread is fully utilised through getting the location. */
         Runnable locationThread = () -> {
-            Log.i("PermissionCheck", "Checking for location permissions...");
+            Log.i("NewEntryActivity", "Getting system location...");
             getSystemLocation();
-            Log.i("PermissionCheck", "Thread completed");
+            Log.i("NewEntryActivity", "Location thread completed");
         };
 
         bgThread.addTaskToMessageQueue(locationThread);
@@ -163,7 +165,7 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
             // If permissions have been granted, a location update is requested
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                     MIN_TIME, MIN_DISTANCE, this);
-            getLocationFromCoords(latitude, longitude);
+            getAddressFromCoords(latitude, longitude);
         }
     }
 
@@ -174,9 +176,9 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
         if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
             Toast.makeText(this, "Location permissions are required.",
                     Toast.LENGTH_SHORT).show();
-            Log.w("PermissionCheck", "Location permissions not granted");
+            Log.w("NewEntryActivity", "Location permissions not granted");
         } else {
-            Log.i("PermissionCheck", "Location permissions granted");
+            Log.i("NewEntryActivity", "Location permissions granted");
         }
     }
 
@@ -191,7 +193,7 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
     }
 
     public void onLocationChanged(Location location) {
-        Log.d("new_location", "Location Change Detected, Latitude: "
+        Log.d("NewEntryActivity", "Location Change Detected, Latitude: "
                 + location.getLatitude() + " Longitude: " + location.getLongitude());
         // These values are stored in the DB for future use in the map fragment.
         latitude = location.getLatitude();
@@ -199,9 +201,9 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
 
         // This code runs on a separate thread so the UI does not freeze.
         Runnable get_location = () -> {
-            Log.i("LocationChange", "Getting location from coordinates...");
-            getLocationFromCoords(latitude, longitude);
-            Log.i("LocationChange", "Thread completed");
+            Log.i("NewEntryActivity", "Getting address from coordinates...");
+            getAddressFromCoords(latitude, longitude);
+            Log.i("NewEntryActivity", "Address retrieved from coordinates");
         };
         bgThread.addTaskToMessageQueue(get_location);
     }
@@ -211,15 +213,13 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
      * @param latitude The latitude of the user at the time of entry creation.
      * @param longitude The longitude of the user at the time of entry creation.
      */
-    private void getLocationFromCoords(double latitude, double longitude) {
+    private void getAddressFromCoords(double latitude, double longitude) {
         Geocoder geocoder = new Geocoder(NewEntryActivity.this, Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            Log.d("GetLocation", ("Latitude: " + latitude + " Longitude: " + longitude));
 
             if (addresses != null && !addresses.isEmpty()) {
                 int size = addresses.size() - 1;
-                Log.d("GetLocation", ("Size of address list: " + size));
                 String cityName = addresses.get(size).getLocality();
                 String countryName = addresses.get(size).getCountryName();
 
@@ -236,14 +236,14 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
 
                 runOnUiThread(() -> {
                     locationText.setText(finalCityName + ", " + countryName);
-                    Log.i("GetLocation",
-                            "Location found: " + finalCityName + ", " + countryName);
+                    Log.i("NewEntryActivity",
+                            "Address found: " + finalCityName + ", " + countryName);
                 });
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            Log.w("GetLocation", "Location could not be found from coordinates");
+            Log.w("NewEntryActivity", "Address could not be found from coordinates");
         }
     }
 
@@ -252,6 +252,15 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
         super.onPause();
         // The location manager is stopped to save battery life.
         locationManager.removeUpdates(this);
+        Log.i("NewEntryActivity", "Location updates paused");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // The background thread is stopped to prevent memory leaks.
+        locationManager.removeUpdates(this);
+        Log.i("NewEntryActivity", "Location updates stopped");
     }
 
     @Override
@@ -259,5 +268,6 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
         super.onResume();
         // A location update is requested when the activity is resumed.
         getSystemLocation();
+        Log.i("NewEntryActivity", "Location updates resumed");
     }
 }

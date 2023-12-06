@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView entryView;
     private EntryDao entryDao; // Data access object
     private EntryRecyclerAdapter entryAdapter; // Adapter for recycler view
 
@@ -24,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        entryView = findViewById(R.id.journalEntries);
+        RecyclerView entryView = findViewById(R.id.journalEntries);
         entryView.setLayoutManager(new LinearLayoutManager(this));
         FloatingActionButton addEntry = findViewById(R.id.addEntry);
 
@@ -40,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
             Bundle b = new Bundle();
             b.putInt("entry_id", entry.getId()); // Pass the id of the entry of be viewed
             intent.putExtras(b);
-            Log.i("EntryAdapter", "Starting ViewEntryActivity, entry_id = " + entry.getId());
+            Log.i("MainActivity", "Starting ViewEntryActivity, entry_id = " + entry.getId());
             startActivity(intent);
         });
 
@@ -48,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         addEntry.setOnClickListener(v -> {
             // create new intent for creating a new entry
-            Log.i("NewEntry", "Starting NewEntryActivity");
+            Log.i("MainActivity", "Starting NewEntryActivity");
             Intent intent = new Intent(MainActivity.this, NewEntryActivity.class);
             startActivity(intent);
         });

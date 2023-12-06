@@ -51,6 +51,7 @@
         android:layout_marginEnd="12dp"
         android:ems="10"
         android:inputType="textCapWords"
+        android:maxLength="30"
         android:hint="@string/new_entry_name"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -83,7 +84,7 @@
         android:layout_marginStart="30dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
-        android:text="13/11/23, 10:55 a.m."
+        android:text="13/11/23, 10:55 AM"
         app:layout_constraintBottom_toTopOf="@+id/newEntryTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/newEntryPrompt" />

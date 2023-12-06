@@ -24,7 +24,7 @@
             android:layout_gravity="center"
             android:text="@string/view_entry"
             android:textColor="@color/white"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
     </androidx.appcompat.widget.Toolbar>
 
     <TextView
@@ -41,7 +41,7 @@
     <TextView
         android:id="@+id/viewEntryPrompt"
         android:layout_width="wrap_content"
-        android:layout_height="70dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginStart="12dp"
         android:layout_marginTop="60dp"
@@ -86,6 +86,7 @@
         android:id="@+id/viewEntryText"
         android:layout_width="384dp"
         android:layout_height="wrap_content"
+        android:maxHeight="150dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="20dp"
@@ -93,6 +94,7 @@
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:text="TextView"
+        android:scrollbars="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/viewEntryPrompt" />
