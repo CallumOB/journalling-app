@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Journalling App</string>
     <string name="new_entry">New Entry</string>
-    <string name="new_entry_name">Name your entry...</string>
-    <string name="entry_editText">Write your entry...</string>
+    <string name="new_entry_name">Name your entry... (30 characters max.)</string>
+    <string name="entry_editText">Write your entry... (200 characters max.)</string>
     <string name="view_entry">View Entry</string>
 
     <string-array name="journal_prompts">

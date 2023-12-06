@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.fragment.app.Fragment;
+import android.text.method.ScrollingMovementMethod;
 
 public class ViewEntryActivity extends AppCompatActivity {
 
@@ -24,6 +25,13 @@ public class ViewEntryActivity extends AppCompatActivity {
         TextView viewEntryPrompt = findViewById(R.id.viewEntryPrompt);
         TextView viewEntryName = findViewById(R.id.viewEntryTitle);
         TextView viewEntryText = findViewById(R.id.viewEntryText);
+
+        /* referenced from:
+         * https://www.geeksforgeeks.org/how-to-make-textview-scrollable-in-android/
+         * allows the TextView to be scrollable once it reaches its maximum height
+         */
+        viewEntryText.setMovementMethod(new ScrollingMovementMethod());
+
         FloatingActionButton deleteEntry = findViewById(R.id.deleteEntry);
         Fragment mapView = new MapFragment(); // The fragment that will display the map.
 
