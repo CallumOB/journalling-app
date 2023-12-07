@@ -8,7 +8,7 @@ The app has the following functionality:
 
 The app implements three activities: 
 1. MainActivity
-<img src="./screenshots/main-activity.png" width="100px">
+<img src="./screenshots/main-activity.png" width="200px">
 This is where the user can view all of their previously written journal entries. Entries are shown in chronological order. Upon clicking on an entry, ViewEntryActivity is launched, showing them more details about that entry. Otherwise, they can click on the plus button in the bottom right to add a new entry using NewEntryActivity.
 
 2. NewEntryActivity
