@@ -7,7 +7,9 @@ The app has the following functionality:
 - View previously written entries individually, along with a Google Maps fragment showing the location of writing
 
 The app implements three activities: 
+
 # 1. MainActivity
+
 <p align="center"><img src="./screenshots/main-activity.png" width="250px"></p>
 
 This is where the user can view all of their previously written journal entries. Entries are shown in chronological order. Upon clicking on an entry, ViewEntryActivity is launched, showing them more details about that entry. Otherwise, they can click on the plus button in the bottom right to add a new entry using NewEntryActivity.
