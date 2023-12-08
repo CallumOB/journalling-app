@@ -72,7 +72,7 @@ public class MapFragment extends Fragment {
 
         /* The entry is retrieved from the database
          * so the fragment can access the stored latitude and longitude.*/
-        entry = entryDao.getEntryById(getEntryId());
+        entry = entryDao.getEntryById(getIdFromBundle());
     }
 
     @Nullable
@@ -97,7 +97,7 @@ public class MapFragment extends Fragment {
      * This method is used to access data passed from the parent activity to the fragment.
      * @return The entry id passed from the parent activity.
      */
-    private int getEntryId() {
+    private int getIdFromBundle() {
         Bundle bundle = getArguments();
         if (bundle != null) {
             return bundle.getInt("entry_id");

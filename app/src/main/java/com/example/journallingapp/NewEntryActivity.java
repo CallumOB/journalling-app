@@ -267,7 +267,12 @@ public class NewEntryActivity extends AppCompatActivity implements LocationListe
     protected void onResume() {
         super.onResume();
         // A location update is requested when the activity is resumed.
-        getSystemLocation();
+        Runnable getLocation = () -> {
+            Log.i("NewEntryActivity", "Getting system location...");
+            getSystemLocation();
+            Log.i("NewEntryActivity", "Location thread completed");
+        };
+        bgThread.addTaskToMessageQueue(getLocation);
         Log.i("NewEntryActivity", "Location updates resumed");
     }
 }

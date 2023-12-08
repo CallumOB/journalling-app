@@ -35,14 +35,10 @@ public class ViewEntryActivity extends AppCompatActivity {
         FloatingActionButton deleteEntry = findViewById(R.id.deleteEntry);
         Fragment mapView = new MapFragment(); // The fragment that will display the map.
 
-        try {
-            entryDao = Room.databaseBuilder(this, EntryDatabase.class, "entry-db")
-                    .allowMainThreadQueries()
-                    .build()
-                    .getEntryDao();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        entryDao = Room.databaseBuilder(this, EntryDatabase.class, "entry-db")
+                .allowMainThreadQueries()
+                .build()
+                .getEntryDao();
 
         Entry currentEntry = entryDao.getEntryById(getIntent().getExtras().getInt("entry_id"));
         viewEntryDate.setText(currentEntry.getDate());
@@ -89,15 +85,15 @@ public class ViewEntryActivity extends AppCompatActivity {
     /**
      * This method is used to pass data from the activity to the fragment.
      * @param fragment The fragment to pass data to.
-     * @param entryID The id of the entry to be passed to the fragment.
+     * @param entryId The id of the entry to be passed to the fragment.
      */
-    private void shareWithFragment(Fragment fragment, int entryID) {
+    private void shareWithFragment(Fragment fragment, int entryId) {
         /* Code referenced from
          * https://medium.com/@ahmetbostanciklioglu/how-to-pass-data-from-activity-to-fragment-37c2785b443
          * Article covers kotlin, but the general idea is the same
          */
         Bundle bundle = new Bundle();
-        bundle.putInt("entry_id", entryID);
+        bundle.putInt("entry_id", entryId);
         fragment.setArguments(bundle);
     }
 }
