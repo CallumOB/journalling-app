@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Journalling App</string>
+    <string name="app_name">Journal</string>
     <string name="new_entry">New Entry</string>
     <string name="new_entry_name">Name your entry... (30 characters max.)</string>
     <string name="entry_editText">Write your entry... (200 characters max.)</string>
